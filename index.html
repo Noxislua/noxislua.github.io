@@ -90,18 +90,16 @@
 
   @keyframes shoot {
     0% {
-      /* Inclinaison de 35 degrés pour un vrai effet de chute */
       transform: rotate(-35deg) translateX(0);
       opacity: 0;
     }
     10% {
-      opacity: 1; /* Apparaît très vite au contact de l'atmosphère */
+      opacity: 1;
     }
     70% {
-      opacity: 0; /* Brûle et s'estompe avant de sortir de l'écran */
+      opacity: 0;
     }
     100% {
-      /* Le translateX suit maintenant l'angle donné par le rotate ! */
       transform: rotate(-35deg) translateX(-1200px);
       opacity: 0;
     }
@@ -653,11 +651,6 @@
 <div class="orb orb2"></div>
 <div class="orb orb3"></div>
 <div class="orb orb4"></div>
-<div class="shooting-star ss1"></div>
-<div class="shooting-star ss2"></div>
-<div class="shooting-star ss3"></div>
-<div class="shooting-star ss4"></div>
-<div class="shooting-star ss5"></div>
 <div class="scroll-glow"></div>
 
 <div class="container">
@@ -925,6 +918,7 @@
   resize();
   window.addEventListener('resize', resize);
 
+  /* ── STARS ── */
   const STAR_COUNT = 300;
   const stars = Array.from({ length: STAR_COUNT }, () => ({
     x:     Math.random() * canvas.width,
@@ -944,9 +938,47 @@
     hue: Math.random() < 0.5 ? '220,218,238' : '200,215,235',
   }));
 
-  function drawStars() {
+  /* ── SHOOTING STARS (canvas) ── */
+  const shooters = [];
+
+  function createShooter(delayMs = 0) {
+    return {
+      x:       canvas.width * 0.3 + Math.random() * canvas.width * 0.9,
+      y:       -30 + Math.random() * canvas.height * 0.25,
+      angle:   (205 + Math.random() * 30) * Math.PI / 180,
+      speed:   12 + Math.random() * 16,
+      tailLen: 180 + Math.random() * 280,
+      size:    1.6 + Math.random() * 2.4,
+      alpha:   0,
+      fadeIn:  true,
+      done:    false,
+      delay:   delayMs,
+    };
+  }
+
+  /* Burst à l'ouverture : 8 étoiles filantes en rafale */
+  for (let i = 0; i < 8; i++) {
+    shooters.push(createShooter(i * 160));
+  }
+
+  /* Spawn aléatoire continu */
+  function scheduleNext() {
+    setTimeout(() => {
+      shooters.push(createShooter(0));
+      if (shooters.length > 20) shooters.splice(0, shooters.findIndex(s => s.done) + 1 || 1);
+      scheduleNext();
+    }, 1800 + Math.random() * 2800);
+  }
+  scheduleNext();
+
+  /* ── DRAW LOOP ── */
+  let lastTime = 0;
+  function drawStars(ts = 0) {
+    const dt = Math.min(ts - lastTime, 32);
+    lastTime = ts;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    /* Regular stars */
     stars.forEach(s => {
       s.a += s.da;
       if (s.a > 1 || s.a < 0) s.da *= -1;
@@ -958,6 +990,7 @@
       ctx.fill();
     });
 
+    /* Bright clusters */
     clusters.forEach(c => {
       c.a += c.da;
       if (c.a > 1 || c.a < 0) c.da *= -1;
@@ -975,10 +1008,85 @@
       ctx.fill();
     });
 
+    /* Shooting stars */
+    shooters.forEach(s => {
+      if (s.done) return;
+      if (s.delay > 0) { s.delay -= dt; return; }
+
+      s.x += Math.cos(s.angle) * s.speed;
+      s.y += Math.sin(s.angle) * s.speed;
+
+      /* Fade in / out */
+      if (s.fadeIn) {
+        s.alpha += 0.07;
+        if (s.alpha >= 1) { s.alpha = 1; s.fadeIn = false; }
+      } else {
+        s.alpha -= 0.012;
+      }
+      if (s.alpha <= 0 || s.x < -300 || s.y > canvas.height + 300) {
+        s.done = true; return;
+      }
+
+      ctx.save();
+
+      /* ── TAIL ── */
+      const tx = s.x - Math.cos(s.angle) * s.tailLen;
+      const ty = s.y - Math.sin(s.angle) * s.tailLen;
+      const tailGrad = ctx.createLinearGradient(s.x, s.y, tx, ty);
+      tailGrad.addColorStop(0,    `rgba(255,255,255,${s.alpha * 0.95})`);
+      tailGrad.addColorStop(0.12, `rgba(210,218,255,${s.alpha * 0.75})`);
+      tailGrad.addColorStop(0.4,  `rgba(180,190,255,${s.alpha * 0.3})`);
+      tailGrad.addColorStop(1,    `rgba(160,170,255,0)`);
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(tx, ty);
+      ctx.strokeStyle = tailGrad;
+      ctx.lineWidth   = s.size;
+      ctx.lineCap     = 'round';
+      ctx.shadowColor = 'rgba(210,215,255,0.6)';
+      ctx.shadowBlur  = 6;
+      ctx.globalAlpha = s.alpha;
+      ctx.stroke();
+
+      /* ── GLOW HEAD (3 layers) ── */
+      // outer soft halo
+      const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 14);
+      halo.addColorStop(0,   `rgba(200,210,255,${s.alpha * 0.35})`);
+      halo.addColorStop(1,   `rgba(180,190,255,0)`);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size * 14, 0, Math.PI * 2);
+      ctx.fillStyle = halo;
+      ctx.shadowBlur = 0;
+      ctx.fill();
+
+      // mid glow
+      const mid = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 6);
+      mid.addColorStop(0,   `rgba(240,242,255,${s.alpha * 0.9})`);
+      mid.addColorStop(0.5, `rgba(210,215,255,${s.alpha * 0.5})`);
+      mid.addColorStop(1,   `rgba(190,200,255,0)`);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size * 6, 0, Math.PI * 2);
+      ctx.fillStyle = mid;
+      ctx.shadowColor = 'rgba(220,225,255,1)';
+      ctx.shadowBlur  = 20;
+      ctx.fill();
+
+      // bright core
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size * 1.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+      ctx.shadowColor = 'rgba(255,255,255,1)';
+      ctx.shadowBlur  = 12;
+      ctx.fill();
+
+      ctx.restore();
+    });
+
     requestAnimationFrame(drawStars);
   }
   drawStars();
 
+  /* ── SCROLL REVEAL ── */
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
