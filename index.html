@@ -679,7 +679,6 @@
     </div>
   </header>
 
-  <!-- GAMES -->
   <div class="section">
     <div class="sec-hdr">
       <span class="sec-icon">🪐</span>
@@ -807,7 +806,6 @@
     </div>
   </div>
 
-  <!-- INFO GRID -->
   <div class="info-grid">
     <div class="info-card">
       <span class="info-icon">🔑</span>
@@ -846,14 +844,13 @@
         </div>
       </div>
       <div class="notice-body">
-        <p>Hello to anyone who spends time cracking or reversing obfuscated scripts. We kindly ask that you <span class="notice-hl">please respect our work</span> and avoid leaking or redistributing our code. Our project has been actively maintained and updated for <span class="notice-hl">over 4 years</span>, and we've built trust within the community during that time.</p>
-        <p>Our goal has always been to keep our scripts <span class="notice-hl">accessible and compatible with as many executors as possible</span>. Because of this, we cannot always use the most aggressive or secure obfuscation methods — some high-security obfuscators break compatibility with low-UNC executors, which many users still rely on.</p>
-        <p>As a result, we sometimes have to use <span class="notice-hl">mid-level obfuscation</span> rather than extremely heavy protection. This is purely to ensure stability and accessibility for our users. We simply ask that you <span class="notice-hl">respect the time and effort</span> that has gone into this project, and avoid leaking or intentionally bypassing our protections.</p>
+        <p>Hello to everyone interested in analyzing or reversing obfuscated scripts. We kindly ask that you <span class="notice-hl">respect the work we’ve put in</span> and refrain from leaking or redistributing our code. This project has been consistently maintained and improved for <span class="notice-hl">more than a year</span>, earning the trust of our community along the way.</p>
+        <p>Our objective has always been to keep our scripts <span class="notice-hl">widely accessible and compatible with a broad range of executors</span>. For this reason, we cannot always rely on the most advanced or restrictive obfuscation techniques — some stronger protections can cause issues with low-UNC executors that are still commonly used.</p>
+        <p>Because of these limitations, we sometimes choose <span class="notice-hl">moderate levels of obfuscation</span> instead of the most extreme options. This decision is made to preserve reliability and accessibility for users. We simply ask that you <span class="notice-hl">acknowledge the effort behind this project</span> and avoid leaking or deliberately bypassing our protections.</p>
       </div>
     </div>
   </div>
 
-  <!-- LOADSTRINGS -->
   <div class="section">
     <div class="sec-hdr">
       <span class="sec-icon">☄️</span>
@@ -918,7 +915,6 @@
   resize();
   window.addEventListener('resize', resize);
 
-  /* ── STARS ── */
   const STAR_COUNT = 300;
   const stars = Array.from({ length: STAR_COUNT }, () => ({
     x:     Math.random() * canvas.width,
@@ -938,7 +934,6 @@
     hue: Math.random() < 0.5 ? '220,218,238' : '200,215,235',
   }));
 
-  /* ── SHOOTING STARS (canvas) ── */
   const shooters = [];
 
   function createShooter(delayMs = 0) {
@@ -956,12 +951,10 @@
     };
   }
 
-  /* Burst à l'ouverture : 8 étoiles filantes en rafale */
   for (let i = 0; i < 8; i++) {
     shooters.push(createShooter(i * 160));
   }
 
-  /* Spawn aléatoire continu */
   function scheduleNext() {
     setTimeout(() => {
       shooters.push(createShooter(0));
@@ -971,14 +964,12 @@
   }
   scheduleNext();
 
-  /* ── DRAW LOOP ── */
   let lastTime = 0;
   function drawStars(ts = 0) {
     const dt = Math.min(ts - lastTime, 32);
     lastTime = ts;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    /* Regular stars */
     stars.forEach(s => {
       s.a += s.da;
       if (s.a > 1 || s.a < 0) s.da *= -1;
@@ -990,7 +981,6 @@
       ctx.fill();
     });
 
-    /* Bright clusters */
     clusters.forEach(c => {
       c.a += c.da;
       if (c.a > 1 || c.a < 0) c.da *= -1;
@@ -1008,7 +998,6 @@
       ctx.fill();
     });
 
-    /* Shooting stars */
     shooters.forEach(s => {
       if (s.done) return;
       if (s.delay > 0) { s.delay -= dt; return; }
@@ -1029,7 +1018,6 @@
 
       ctx.save();
 
-      /* ── TAIL ── */
       const tx = s.x - Math.cos(s.angle) * s.tailLen;
       const ty = s.y - Math.sin(s.angle) * s.tailLen;
       const tailGrad = ctx.createLinearGradient(s.x, s.y, tx, ty);
@@ -1048,8 +1036,6 @@
       ctx.globalAlpha = s.alpha;
       ctx.stroke();
 
-      /* ── GLOW HEAD (3 layers) ── */
-      // outer soft halo
       const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 14);
       halo.addColorStop(0,   `rgba(200,210,255,${s.alpha * 0.35})`);
       halo.addColorStop(1,   `rgba(180,190,255,0)`);
@@ -1059,7 +1045,6 @@
       ctx.shadowBlur = 0;
       ctx.fill();
 
-      // mid glow
       const mid = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 6);
       mid.addColorStop(0,   `rgba(240,242,255,${s.alpha * 0.9})`);
       mid.addColorStop(0.5, `rgba(210,215,255,${s.alpha * 0.5})`);
@@ -1071,7 +1056,6 @@
       ctx.shadowBlur  = 20;
       ctx.fill();
 
-      // bright core
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.size * 1.2, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
@@ -1086,7 +1070,6 @@
   }
   drawStars();
 
-  /* ── SCROLL REVEAL ── */
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
