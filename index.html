@@ -642,7 +642,36 @@
     background: linear-gradient(transparent, rgba(5,5,8,0.72));
     pointer-events:none; z-index:2;
   }
+
+  /* --- Premium Features Gold Effect --- */
+  .feat.premium {
+    color: rgba(235, 195, 110, 0.9);
+  }
+  .feat.premium:hover {
+    color: rgba(255, 220, 140, 1);
+  }
+  .feat.premium::before {
+    background: rgba(235, 195, 110, 0.6);
+  }
+  .feat.premium:hover::before {
+    background: rgba(255, 220, 140, 1);
+    box-shadow: 0 0 10px rgba(255, 220, 140, 0.5);
+  }
+  .badge-gold {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #1a1820;
+    background: linear-gradient(90deg, #dfbb6e, #f5d796);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(223, 187, 110, 0.2);
+  }
 </style>
+
 </head>
 <body>
 
@@ -689,11 +718,11 @@
     <div class="game-card" onclick="this.classList.toggle('open')">
       <div class="game-hdr">
         <div class="game-left">
-          <span class="game-ver">v3.2</span>
+          <span class="game-ver">v3.8</span>
           <span class="game-name">Be a Youtuber</span>
         </div>
         <div style="display:flex;align-items:center;gap:12px">
-          <span class="game-count">21 features</span>
+          <span class="game-count">25 features</span>
           <div class="chev">▾</div>
         </div>
       </div>
@@ -703,10 +732,12 @@
           <div class="feat-grid">
             <div class="feat">Auto Collect</div><div class="feat">Auto Upload</div>
             <div class="feat">Auto Claim</div><div class="feat">Auto Submit</div>
+            <div class="feat">Auto Claim Collab</div><div class="feat premium">Start Collab <span class="badge-gold">Premium</span></div>
             <div class="feat">Auto Claim Quests</div><div class="feat">Smart Auto Rebirth</div>
             <div class="feat">Auto Upgrades</div><div class="feat">Auto Buy House</div>
-            <div class="feat">Auto Buy Youtuber</div><div class="feat">Auto Bulk Hatch</div>
-            <div class="feat">Sell All Youtubers</div><div class="feat">Redeem All Codes</div>
+            <div class="feat">Auto Buy Youtuber</div><div class="feat">Sell All Youtubers</div>
+            <div class="feat premium">Unlock All Pass <span class="badge-gold">Premium</span></div><div class="feat">Auto Claim Pass</div>
+            <div class="feat">Auto Bulk Hatch</div><div class="feat">Redeem All Codes</div>
           </div>
         </div>
         <div class="feat-group">
@@ -793,7 +824,7 @@
             <div class="feat">Web Image Import</div><div class="feat">Randomize / Step Mode</div>
             <div class="feat">17 Brush Styles</div><div class="feat">Brush Size 1–5</div>
             <div class="feat">Skip White Background</div><div class="feat">Cancel Drawing</div>
-            <div class="feat">Speed Draw (Premium Only)</div>
+            <div class="feat premium">Speed Draw <span class="badge-gold">Premium</span></div>
           </div>
         </div>
         <div class="feat-group">
@@ -872,6 +903,31 @@
       <span class="info-icon">🗂</span>
       <strong>Hotkey</strong>
       <p>Press <strong style="color:rgba(225,222,240,0.92)">F8</strong> to toggle the UI at any time.</p>
+    </div>
+  </div>
+
+  
+  <!-- PREMIUM SECTION -->
+  <div class="section">
+    <div class="sec-hdr">
+      <span class="sec-icon">👑</span>
+      <span class="sec-title">Premium Access</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="notice-card" style="background: linear-gradient(145deg, rgba(235,195,110,0.06) 0%, rgba(10,10,18,0.6) 55%, rgba(235,195,110,0.02) 100%); border-color: rgba(235,195,110,0.15);">
+      <div class="notice-hdr">
+        <div class="notice-icon" style="background: rgba(235,195,110,0.1); border-color: rgba(235,195,110,0.25); color: #dfbb6e;">👑</div>
+        <div>
+          <div class="notice-title" style="color: #f5d796;">Unlock the Hub's Full Potential</div>
+          <div class="notice-sub" style="color: rgba(235,195,110,0.4);">Exclusive Features & Advanced Scripts</div>
+        </div>
+      </div>
+      <div class="notice-body">
+        <p>Certain features are marked as <span class="notice-hl" style="color: #dfbb6e;">Premium</span>. By gaining this access, you support the project's development and unlock overpowered farming capabilities to maximize your efficiency.</p>
+        <a href="https://discord.com/invite/NkYSkdAkey" target="_blank" style="text-decoration: none;">
+            <button class="copy-btn" style="background: rgba(235,195,110,0.1); border-color: rgba(235,195,110,0.3); color: #f5d796; margin-top: 12px; font-weight: bold; cursor: pointer;">Join Discord to Purchase</button>
+        </a>
+      </div>
     </div>
   </div>
 
